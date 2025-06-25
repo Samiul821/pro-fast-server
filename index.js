@@ -38,7 +38,7 @@ async function run() {
     });
 
     // Add Parcel (sample route)
-    app.post("/add-parcel", async (req, res) => {
+    app.post("/add-parcels", async (req, res) => {
       const parcel = req.body;
       const result = await parcelCollection.insertOne(parcel);
       res.send(result);
