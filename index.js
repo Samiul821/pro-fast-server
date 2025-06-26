@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // Load environment variables from .env file
 dotenv.config();
@@ -66,6 +66,22 @@ async function run() {
 
       const result = await parcelCollection.insertOne(parcel);
       res.send(result);
+    });
+
+    app.delete("/my-parcels/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        // Optional: validate ID to avoid crash (recommended, but optional for you)
+        const query = { _id: new ObjectId(id) };
+
+        const result = await parcelCollection.deleteOne(query);
+
+        res.send(result); // Just send raw result
+      } catch (error) {
+        console.error("❌ Error deleting parcel:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
     });
 
     // Send a ping to confirm a successful connection
