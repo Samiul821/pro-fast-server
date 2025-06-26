@@ -57,6 +57,24 @@ async function run() {
       }
     });
 
+    app.get("/parcels/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        const query = { _id: new ObjectId(id) };
+        const parcel = await parcelCollection.findOne(query);
+
+        if (!parcel) {
+          return res.status(404).send({ message: "Parcel not found" });
+        }
+
+        res.send(parcel);
+      } catch (error) {
+        console.error("❌ Error fetching parcel by ID:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
     // Add Parcel (sample route)
     app.post("/add-parcels", async (req, res) => {
       const parcel = req.body;
