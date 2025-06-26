@@ -37,9 +37,33 @@ async function run() {
       res.send(parcels);
     });
 
+    // parcels er api
+    app.get("/my-parcels", async (req, res) => {
+      try {
+        const userEmail = req.query.email;
+        // 🟡 Query: If email exists, filter; else get all
+        const query = userEmail ? { created_by: userEmail } : {};
+
+        // 🟢 Options: Sort by creation_date descending
+        const options = { sort: { creation_date: -1 } };
+
+        // 🔵 Fetch from MongoDB
+        const parcels = await parcelCollection.find(query, options).toArray();
+
+        res.send(parcels);
+      } catch (error) {
+        console.error("❌ Error fetching parcels:", error);
+        res.status(500).send({ message: "Failed to fetch parcels" });
+      }
+    });
+
     // Add Parcel (sample route)
     app.post("/add-parcels", async (req, res) => {
       const parcel = req.body;
+
+      // ✅ Backend-side creation_date নিশ্চিত করো
+      parcel.creation_date = new Date();
+
       const result = await parcelCollection.insertOne(parcel);
       res.send(result);
     });
