@@ -257,6 +257,29 @@ async function run() {
       }
     });
 
+    app.get("/parcels/delivery/status-count", async (req, res) => {
+      const pipeline = [
+        {
+          $group: {
+            _id: "$delivery_status",
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $project: {
+            status: "$_id",
+            count: 1,
+            _id: 0
+          },
+        },
+      ];
+
+      const reslut = await parcelsCollection.aggregate(pipeline).toArray();
+      res.send(reslut);
+    });
+
     // GET: Get pending delivery tasks for a rider
     app.get("/rider/parcels", verifyFBToken, verifyRider, async (req, res) => {
       try {
